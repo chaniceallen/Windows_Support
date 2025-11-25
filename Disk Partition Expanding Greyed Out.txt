@@ -1,0 +1,73 @@
+#For Expanding Disks w/ Interrupting Partitions using cmd as Admin
+
+#IMPORTANT: Note the size of the recovery partition. You will need this in step #11.
+
+#Open command prompt as administrator
+
+# Run command below to see the recovery environment's status.
+reagentc /info
+
+# To disable the interruptin recovery environment, run command below
+reagentc /disable
+
+# Run command below again to confirm that this is disabled now
+reagentc /info
+
+#Enter Disk Partition Program by running the command below
+diskpart
+
+# Run command below to see available disk partitions
+list disk
+
+# Select your disk by running command below. NOTE: Insert the disk number that you  want to edit.
+select disk
+
+# To confirm that you selected the right disk, run the command below and look for an astrik next to the partition you chose.
+list partition
+
+# Select the partition that says "Recovery" by running command below. NOTE: Insert the partition # you want to edit.
+select partition #
+
+# To see the atributes of the parition, use command below.
+detail partition
+
+#VERY IMPORTANT: Copy the partition ID # (says "Type" and the Attrib #.) We will need these later to re-create the recovery partition.
+
+#Run the command below to delete the partition for Recovery.
+delete partition override
+
+#Do new simple volume and for the space, do the size minus whatever was previously allocated for the recovery partition [usually less than 1 GB (less than 1000 MB)].
+
+# Now for the remaining space that will belong to recovery, do a new simple volume and assign it a drive letter. Name that partition 'Recovery'.
+
+# Go back to cmd and run command below to see partitions.
+list partition
+
+# Select the partition that you just created by running command below.
+select partition #
+
+#To re-create the Recovery parition, you need to set the partition you created with the ID you copied previously. To do this, run the command below.
+set id=type#
+
+#To re-create the Recovery parition, you need to set the partition you created with the Atrribute # you copied previously. To do this, run the command below.
+gpt attributes=attrib#
+
+#The recovery partition is now created but is showing in file manager. Too hide it, go back to cmd and run the command to show the volumes.
+list volume
+
+#Note the drive letter of the recovery partition
+
+#Select the volume by running the command below. NOTE: Subsitute D with your recovery drive letter.
+select volume D
+
+#Remove the drive letter by running the command below. NOTE: Subsitute D with your recovery drive letter.
+remove letter=D
+
+#Exit disk part by typing the command below
+exit
+
+#Re-enable recovery environment
+reagentc /enable
+
+#TaDa! All finished!
+
