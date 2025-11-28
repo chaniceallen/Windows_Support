@@ -17,9 +17,10 @@ For this reason, the DVD-ROM must be enabled in the OS in the generalized image.
 If it is disabled, the Windows VM will be stuck at out-of-box experience (OOBE).
 
 Before You Run SysPrep
-1. Make sure the VM has received the latest windows updates 
+1. Make sure the VM has received the latest windows updates and is in correct time zone.
+	- Run "tzutil /s "Eastern Standard Time" to set it if needed using elevated command prompt
 2. Install required line-of-business applications
-3. Delete temporaty files that are not needed, browser cache, and user profiles that are not needed.
+3. Delete temporary files that are not needed, browser cache, and user profiles that are not needed.
  - Removing User profiles
 	- Press Windows key + R, type sysdm.cpl, and press Enter.
 	- Go to the Advanced tab → under User Profiles, click Settings.
@@ -30,16 +31,17 @@ Before You Run SysPrep
 7. Set GPOs
 8. Run disk cleanup and defragment (if applicable. Not common in SSD)
  - Type "defrag" in after clicking start icon
- - Sleect the disk you want to work with and click "Analyze"
+ - Select the disk you want to work with and click "Analyze"
  - If it needs to be optimized, select "optimize"
 
-9. Disaable unnecessary startup services
-10. Apply security baeselines or hardened configs
-11. Make sure to remove the VM from the domain before running sysprep. RESTART MACHINE! 
+9. Disable unnecessary startup services
+10. Apply security baese lines or hardened configs
+11. Make sure to remove the VM from the domain before running Sysprep. RESTART MACHINE! 
 NOTE: You WILL NEED A LOCAL ADMIN ACCOUNT to get back in the machine
 12. Verify windows activation
-13. Shutdown background processes
-14. Run sysprep command and capture image in ACG
+13. Disable/suspend bitlocker as this will error out the sysprep process
+14. Shutdown background processes (if needed)
+15. Run sysprep command and capture image in ACG
 
 Sysprep Instructions
 1. Sign in to Windows VM
@@ -57,3 +59,4 @@ reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\cdrom /v start /t R
 Documentation Links: 
 1. Golden Image: https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-golden-image
 2. Sysprep: https://learn.microsoft.com/en-us/azure/virtual-machines/generalize#windows
+3. Azure Compute Gallery Image Creation: https://learn.microsoft.com/en-us/azure/virtual-machines/image-version?tabs=portal%2Ccli2
