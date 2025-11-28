@@ -1,0 +1,59 @@
+SysPrep VM Instructions
+
+VERY VERY Important Notes:
+
+1. If your machine will include an antivirus app, it may cause issues when you start sysprep. 
+To avoid this, disable all antivirus programs before running sysprep.
+2. Unified Write Filter (UWF) is not supported for session hosts. Please ensure it is not enabled in your image.
+3. Do not join your golden image VM to a host pool, by deploying the Azure Virtual Desktop Agent. 
+If you do this when you create additional session hosts from this image at a later time, they will fail to join the host pool as the Registration token will have expired. 
+The host pool deployment process will automatically join the session hosts to the required host pool during the provisioning process.
+4. After you've captured your image, don't use the same VM you captured again. Instead, create a new base VM from the last snapshot you created. 
+You'll need to periodically update and patch this new VM on a regular basis
+5.  The process of generalizing a VM is not reversible. 
+If you need to keep the original VM functioning, you should create a snapshot of the OS disk, create a VM from the snapshot, and then generalize that copy of the VM.
+6.Azure platform mounts an ISO file to the DVD-ROM when a Windows VM is created from a generalized image. 
+For this reason, the DVD-ROM must be enabled in the OS in the generalized image. 
+If it is disabled, the Windows VM will be stuck at out-of-box experience (OOBE).
+
+Before You Run SysPrep
+1. Make sure the VM has received the latest windows updates 
+2. Install required line-of-business applications
+3. Delete temporaty files that are not needed, browser cache, and user profiles that are not needed.
+ - Removing User profiles
+	- Press Windows key + R, type sysdm.cpl, and press Enter.
+	- Go to the Advanced tab → under User Profiles, click Settings.
+	- Select each non‑default profile (anything other than Administrator, Default, Public) and click Delete.
+4. Clear even logs and reset windows update history
+5. Remove and saved credentials or machine specific certificates
+6. Configure FSLogix profiles (if using roaming profiles)
+7. Set GPOs
+8. Run disk cleanup and defragment (if applicable. Not common in SSD)
+ - Type "defrag" in after clicking start icon
+ - Sleect the disk you want to work with and click "Analyze"
+ - If it needs to be optimized, select "optimize"
+
+9. Disaable unnecessary startup services
+10. Apply security baeselines or hardened configs
+11. Make sure to remove the VM from the domain before running sysprep. RESTART MACHINE! 
+NOTE: You WILL NEED A LOCAL ADMIN ACCOUNT to get back in the machine
+12. Verify windows activation
+13. Shutdown background processes
+14. Run sysprep command and capture image in ACG
+
+Sysprep Instructions
+1. Sign in to Windows VM
+2. Open Command Prompt as Admin
+3. Delete the panther directory (C:\Windows\Panther)
+4. Verify if CD/DVD-ROM is enabled. If it is disabled, the Windows VM will be stuck at out-of-box experience (OOBE)
+##REM Enable CD/DVD-ROM
+reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\cdrom /v start /t REG_DWORD /d 1 /f
+5.Change directory to Sysprep using command below
+#C:\Windows\System32\Sysprep\
+6. Execute sysprep using command below
+#sysprep.exe /generalize /shutdown
+7. The VM will shut down when Sysprep is finished generalizing the VM. Do not restart the VM.
+
+Documentation Links: 
+1. Golden Image: https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-golden-image
+2. Sysprep: https://learn.microsoft.com/en-us/azure/virtual-machines/generalize#windows
