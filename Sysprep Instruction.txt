@@ -39,7 +39,8 @@ Before You Run SysPrep
 11. Make sure to remove the VM from the domain before running Sysprep. RESTART MACHINE! 
 NOTE: You WILL NEED A LOCAL ADMIN ACCOUNT to get back in the machine
 12. Verify windows activation
-13. Disable/suspend bitlocker as this will error out the sysprep process
+13. Disable/suspend bitlocker as this will error out the sysprep process. (If it errors when you try to Sysprep, you might need to activate and then de-activate BitLocker. You can check the exact error 
+at Windows\System32\Sysprep\Panther\setupact.
 14. Shutdown background processes (if needed)
 15. Run sysprep command and capture image in ACG
 
@@ -60,3 +61,4 @@ Documentation Links:
 1. Golden Image: https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-golden-image
 2. Sysprep: https://learn.microsoft.com/en-us/azure/virtual-machines/generalize#windows
 3. Azure Compute Gallery Image Creation: https://learn.microsoft.com/en-us/azure/virtual-machines/image-version?tabs=portal%2Ccli2
+
