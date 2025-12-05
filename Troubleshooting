@@ -1,0 +1,37 @@
+# Check the status of Windows Defender Firewall for all profiles
+Get-NetFirewallProfile | Select-Object Name, Enabled
+
+#Disable Firewall# Check the status of Windows Defender Firewall for all profiles
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
+#Test connection to another server
+TNC servername
+
+#Verify RDP service running
+Get-Service -Name TermService
+ 
+# Enable RDP by setting fDenyTSConnections to 0
+$regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"
+$regName = "fDenyTSConnections"
+Write-Output "Checking registry setting for RDP access..."
+if (!(Test-Path $regPath)) {
+    Write-Output "Registry path not found. Creating it..."
+    New-Item -Path $regPath -Force | Out-Null
+}
+Set-ItemProperty -Path $regPath -Name $regName -Value 0
+Write-Output "RDP access enabled via registry."
+ 
+# Ensure firewall rule for RDP is enabled
+Write-Output "Enabling firewall rule for Remote Desktop..."
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+ 
+# Restart the SxSStack listener service if present
+Write-Output "Attempting to restart RDInfraStackListener service..."
+Try {
+    Restart-Service -Name RDInfraStackListener -ErrorAction Stop
+    Write-Output "RDInfraStackListener service restarted successfully."
+} Catch {
+    Write-Output "RDInfraStackListener service not found or failed to restart."
+}
+
+ 
