@@ -34,4 +34,23 @@ Try {
     Write-Output "RDInfraStackListener service not found or failed to restart."
 }
 
+Get-Service -Name TermService | Select-Object Status, StartType
+This command checks to see the status of TermService to ensure it is running
+
+netstat -ano | findstr ":3389"
+This command checks to see if the VM is listening over port 3389. In your case, we noticed it was only listening over UDP and not TCP. (Normally should see both)
+
+Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name PortNumber
+This command checks to see which port is currently configured for RDP.
  
+reg query "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections
+This checks the current remote connection configuration. If the command returns 0x1, the VM is not allowing remote connection. In our case, this returned 0x0 which means its enabled.
+
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v fDenyTSConnections
+This command checks if RDP is disabled by group policy. In our case, it returned 0x1 which confirms RDP was disabled by Group policy.
+
+We then ran this command to enable RDP:
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+
+In order to enable RDP via the group policy, this needs to be set at the domain level:
+Computer Configuration\Policies\Administrative Templates: Policy definitions\Windows Components\Remote Desktop Services\Remote Desktop Session Host\Connections\Allow users to connect remotely by using Remote Desktop Services
